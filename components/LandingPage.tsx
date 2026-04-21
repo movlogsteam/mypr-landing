@@ -1,584 +1,555 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import {
-  Sparkles, Zap, Users, ArrowRight, Play, Send, MapPin,
-  Briefcase, TrendingUp, Wallet, Star, DollarSign, Shield,
-  BarChart3, Globe, Award, CheckCircle2, Building2, UserCheck,
-  FileCheck, Target, Megaphone, Search,
-} from "lucide-react";
+
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
 
 type Audience = "creator" | "brand" | "agency";
 
-interface PageConfig {
-  trustLine: string;
-  headline: React.ReactNode;
-  ctaText: string;
-  navLinks: { label: string; href: string }[];
-  features: { title: string; subtitle: string; btnText: string; icon: React.ReactNode; visual: React.ReactNode }[];
-  socialTitle: string;
-  socialSubtitle: string;
-  testimonials: { name: string; platform: string; followers: string; earned: string; quote: string }[];
-  ctaTitle: string;
-  ctaSubtitle: string;
-}
-
-const configs: Record<Audience, PageConfig> = {
+// ─── Copy per audience ─────────────────────────────────────────
+const COPY: Record<
+  Audience,
+  {
+    eyebrow: string;
+    headline: { top: string; script: string; bottom?: string };
+    sub: string;
+    primaryCta: string;
+    navAlt: { label: string; href: string }[];
+    howSteps: { n: string; title: string; body: string; img: string }[];
+    finalHeadline: string;
+    finalSub: string;
+  }
+> = {
   creator: {
-    trustLine: "Your followers are worth more than you think.",
-    headline: <>Turn Your Influence<br /><em>Into Income.</em></>,
-    ctaText: "Get Early Access",
-    navLinks: [{ label: "For Brands", href: "/brand" }, { label: "For Agencies", href: "/agency" }],
-    features: [
-      {
-        title: "Get paid to discover",
-        subtitle: "Try new restaurants, test beauty products, explore fitness brands — and get paid for sharing your honest experience. No massive following needed.",
-        btnText: "See Opportunities",
-        icon: <Briefcase size={20} />,
-        visual: (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", padding: 16 }}>
-            {[
-              { brand: "Nike MENA", type: "Product Unboxing", pay: "$250", tag: "UGC" },
-              { brand: "Noon Daily", type: "15s Review Video", pay: "$80", tag: "Quick" },
-              { brand: "Huda Beauty", type: "Tutorial Reel", pay: "$400", tag: "Beauty" },
-            ].map((job, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, background: "#FAF7F2", borderRadius: 12, padding: "10px 14px", border: "1px solid #D5CFC5" }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: "#ECEAF2", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, color: "#6B5B8A", flexShrink: 0 }}>{job.brand[0]}</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1A" }}>{job.brand}</div>
-                  <div style={{ fontSize: 11, color: "#8A8279" }}>{job.type}</div>
-                </div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#6B5B8A" }}>{job.pay}</div>
-              </div>
-            ))}
-          </div>
-        ),
-      },
-      {
-        title: "Know what you're worth",
-        subtitle: "See what people like you are earning in your city and niche. No more guessing — know your value before you say yes.",
-        btnText: "See Rates",
-        icon: <TrendingUp size={20} />,
-        visual: (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: 16 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: "#8A8279", textTransform: "uppercase" as const, letterSpacing: 0.5 }}>Your Estimated Rate</div>
-            <div style={{ fontSize: 36, fontWeight: 800, color: "#6B5B8A", letterSpacing: -1 }}>$320</div>
-            <div style={{ fontSize: 12, color: "#8A8279" }}>per Instagram Reel</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4, background: "#E4EDE4", padding: "4px 12px", borderRadius: 100, fontSize: 12, fontWeight: 600, color: "#3D6B3D" }}>
-              <TrendingUp size={12} /> +18% vs last quarter
-            </div>
-          </div>
-        ),
-      },
-      {
-        title: "Grow at your own pace",
-        subtitle: "Start small, build your reputation, and unlock bigger opportunities as you go — from your first $50 gig to $5K+ brand partnerships.",
-        btnText: "See How It Works",
-        icon: <Award size={20} />,
-        visual: (
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%", padding: "12px 16px" }}>
-            {["Explorer", "Creator", "Rising", "Pro", "Elite"].map((level, i) => (
-              <div key={level} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 24, height: 24, borderRadius: 100, background: i <= 2 ? "linear-gradient(135deg, #6B5B8A, #1A1A1A)" : "#EDE8DF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {i <= 2 && <CheckCircle2 size={14} color="#FAF7F2" />}
-                </div>
-                <div style={{ flex: 1, fontSize: 13, fontWeight: i === 2 ? 700 : 400, color: i <= 2 ? "#1A1A1A" : "#8A8279" }}>{level}</div>
-                <div style={{ fontSize: 11, color: "#8A8279" }}>{["$25-100", "$50-300", "$100-1K", "$500-5K", "$2K-50K"][i]}</div>
-              </div>
-            ))}
-          </div>
-        ),
-      },
+    eyebrow: "The creator deal platform for MENA",
+    headline: { top: "Turn your", script: "influence", bottom: "into currency." },
+    sub: "Apply to PR packages, on-site experiences, and paid UGC briefs from verified brands. Your handles are already worth more than you think.",
+    primaryCta: "Get early access",
+    navAlt: [
+      { label: "For Brands", href: "/brand" },
+      { label: "For Agencies", href: "/agency" },
     ],
-    socialTitle: "People just like you are getting started.",
-    socialSubtitle: "No fame required. Just a phone and a willingness to try something new.",
-    testimonials: [
-      { name: "Fatima Al-Rashid", platform: "Instagram", followers: "1,200 followers", earned: "4,200", quote: "I started with 800 followers and got my first paid gig within a week. I just had to try a new café and share my experience." },
-      { name: "Omar Hassan", platform: "TikTok", followers: "3,400 followers", earned: "8,500", quote: "I never thought of myself as a creator. But brands actually want real people, not just influencers. That blew my mind." },
-      { name: "Sarah Chen", platform: "YouTube", followers: "850 subscribers", earned: "12,000", quote: "I review products I actually use. MyPR connects me with brands that want exactly that — honest opinions, not scripted ads." },
-      { name: "Khalid Mahmoud", platform: "Instagram", followers: "5,000 followers", earned: "15,000", quote: "I get paid to try new restaurants and fitness products around Dubai. It honestly doesn't feel like work." },
+    howSteps: [
+      { n: "01", title: "Verify your handles", body: "Link Instagram & TikTok in under 60 seconds. We match you to deals you actually qualify for.", img: "/onboarding/verify-handles.png" },
+      { n: "02", title: "Apply to brand deals", body: "Swipe PR packages, on-site visits, and paid briefs from 200+ UAE & KSA brands.", img: "/onboarding/pr-boxes-many.png" },
+      { n: "03", title: "Get paid to post", body: "Upload proof, get approved, get paid. Base payout plus milestone bonuses — straight to your wallet.", img: "/onboarding/coin-stack.png" },
     ],
-    ctaTitle: "Your followers are worth more than you think.",
-    ctaSubtitle: "Start getting paid to try, learn, and share — no experience needed.",
+    finalHeadline: "Your first PR box is waiting.",
+    finalSub: "Launching on iOS soon. Join the waitlist and get early access before the public drop.",
   },
   brand: {
-    trustLine: "The fastest way to get authentic content from real people.",
-    headline: <>Real Content.<br /><em>Real Results.</em></>,
-    ctaText: "Book a Demo",
-    navLinks: [{ label: "For Creators", href: "/" }, { label: "For Agencies", href: "/agency" }],
-    features: [
-      {
-        title: "UGC without the hassle",
-        subtitle: "Post a brief, set your budget, get authentic content from real people in days — not weeks. No agencies, no back-and-forth.",
-        btnText: "Post a Brief",
-        icon: <Megaphone size={20} />,
-        visual: (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: 16 }}>
-            <div style={{ display: "flex", gap: -8, marginBottom: 4 }}>
-              {[0,1,2,3,4].map(i => (
-                <div key={i} style={{ width: 40, height: 40, borderRadius: 100, background: `hsl(${270 + i * 15}, 25%, ${65 - i * 5}%)`, border: "3px solid #FAF7F2", marginLeft: i > 0 ? -10 : 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Users size={16} color="#FAF7F2" />
-                </div>
-              ))}
-            </div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: "#6B5B8A" }}>2,400+</div>
-            <div style={{ fontSize: 12, color: "#8A8279" }}>Verified creators in GCC</div>
-          </div>
-        ),
-      },
-      {
-        title: "Pay for results, not followers",
-        subtitle: "Every rate is benchmarked against real deals. You pay market price for content that converts — not inflated influencer fees.",
-        btnText: "See Pricing",
-        icon: <BarChart3 size={20} />,
-        visual: (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", padding: 16 }}>
-            {[
-              { niche: "Beauty", rate: "$280/reel", trend: "+12%" },
-              { niche: "Food", rate: "$150/reel", trend: "+8%" },
-              { niche: "Fitness", rate: "$220/reel", trend: "+15%" },
-            ].map((r, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, background: "#FAF7F2", borderRadius: 12, padding: "10px 14px", border: "1px solid #D5CFC5" }}>
-                <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: "#1A1A1A" }}>{r.niche}</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#6B5B8A" }}>{r.rate}</div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#3D6B3D", background: "#E4EDE4", padding: "2px 8px", borderRadius: 100 }}>{r.trend}</div>
-              </div>
-            ))}
-          </div>
-        ),
-      },
-      {
-        title: "Built-in compliance",
-        subtitle: "Every creator is automatically license-verified for UAE and KSA. Compliance certificates generated with every deal — zero extra work on your end.",
-        btnText: "Learn More",
-        icon: <Shield size={20} />,
-        visual: (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: 16 }}>
-            <div style={{ width: 56, height: 56, borderRadius: 16, background: "linear-gradient(135deg, #6B5B8A, #1A1A1A)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Shield size={28} color="#FAF7F2" />
-            </div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1A1A", marginTop: 4 }}>Compliance Shield</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 4, width: "100%" }}>
-              {["UAE NMA License Verified", "KSA Mawthooq Verified", "Audit-Ready Certificates"].map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#3D6B3D" }}>
-                  <CheckCircle2 size={14} color="#3D6B3D" /> {item}
-                </div>
-              ))}
-            </div>
-          </div>
-        ),
-      },
+    eyebrow: "The easiest UGC engine in the Gulf",
+    headline: { top: "Real creators.", script: "Real content.", bottom: "Shipped in days." },
+    sub: "Post a brief, set a budget, get authentic content from vetted creators across the UAE & KSA. No agencies, no month-long cycles.",
+    primaryCta: "Book a demo",
+    navAlt: [
+      { label: "For Creators", href: "/" },
+      { label: "For Agencies", href: "/agency" },
     ],
-    socialTitle: "Brands are getting better content for less.",
-    socialSubtitle: "Authentic UGC that actually converts — at a fraction of the cost.",
-    testimonials: [
-      { name: "Ahmad Retail Group", platform: "E-commerce", followers: "50+ campaigns", earned: "120,000", quote: "We cut our cost per UGC asset by 60% and the content performs better than anything our agency produced." },
-      { name: "Noon Marketing", platform: "Marketplace", followers: "200+ creators used", earned: "85,000", quote: "We post a brief and get 20+ authentic pieces of content back within days. It's the most efficient channel we have." },
-      { name: "Dubai Fitness Co", platform: "Fitness", followers: "30+ campaigns", earned: "45,000", quote: "Finding real fitness enthusiasts in the UAE was impossible before. Now we have content from people who actually use our products." },
-      { name: "Luxury Auto KSA", platform: "Automotive", followers: "15+ campaigns", earned: "200,000", quote: "We pay market price, every time. No inflated quotes, no guesswork — just results-driven content at scale." },
+    howSteps: [
+      { n: "01", title: "Post a brief", body: "Pick PR, on-site, or UGC. Set deliverables, budget, and creator criteria in minutes.", img: "/onboarding/verify-handles.png" },
+      { n: "02", title: "Review applicants", body: "Verified creators apply with real audience data. You approve. We handle the rest.", img: "/onboarding/pr-boxes-many.png" },
+      { n: "03", title: "Get content & results", body: "Milestone-gated payouts. Audit-ready compliance. Performance data on every deal.", img: "/onboarding/coin-stack.png" },
     ],
-    ctaTitle: "The easiest way to get UGC that works.",
-    ctaSubtitle: "Market-priced. Results-driven. Ready in days.",
+    finalHeadline: "Content that actually converts.",
+    finalSub: "Get UGC from creators your customers trust. Book a demo and we'll set up your first brief.",
   },
   agency: {
-    trustLine: "Better deals and full transparency for your talent.",
-    headline: <>Support Your Talent.<br /><em>Land Better Deals.</em></>,
-    ctaText: "Request Access",
-    navLinks: [{ label: "For Creators", href: "/" }, { label: "For Brands", href: "/brand" }],
-    features: [
-      {
-        title: "Your entire roster, one dashboard",
-        subtitle: "See every creator's performance, earnings, and availability at a glance. Less admin, more time supporting your talent.",
-        btnText: "See Dashboard",
-        icon: <Building2 size={20} />,
-        visual: (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", padding: 16 }}>
-            <div style={{ display: "flex", gap: 12 }}>
-              {[
-                { label: "Creators", value: "84" },
-                { label: "Combined Reach", value: "12.4M" },
-                { label: "Avg Rate", value: "$420" },
-              ].map((s, i) => (
-                <div key={i} style={{ flex: 1, background: "#FAF7F2", borderRadius: 12, padding: "10px 8px", textAlign: "center" as const, border: "1px solid #D5CFC5" }}>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: "#6B5B8A" }}>{s.value}</div>
-                  <div style={{ fontSize: 10, color: "#8A8279", fontWeight: 500 }}>{s.label}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ background: "#FAF7F2", borderRadius: 12, padding: 12, border: "1px solid #D5CFC5" }}>
-              <div style={{ fontSize: 11, color: "#8A8279", marginBottom: 6 }}>Agency Scorecard</div>
-              <div style={{ display: "flex", gap: 4, alignItems: "flex-end", height: 50 }}>
-                {[40, 55, 35, 68, 50, 62, 45, 72, 58, 65].map((h, i) => (
-                  <div key={i} style={{ flex: 1, height: `${h}%`, background: "linear-gradient(to top, #6B5B8A, #4A3D6B)", borderRadius: "3px 3px 0 0", opacity: 0.85 }} />
-                ))}
-              </div>
-            </div>
-          </div>
-        ),
-      },
-      {
-        title: "Find better deals, faster",
-        subtitle: "Access a live marketplace of brand briefs. Match your talent to the right opportunities and negotiate with real market data behind you.",
-        btnText: "Explore Deals",
-        icon: <Search size={20} />,
-        visual: (
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%", padding: "12px 16px" }}>
-            {[
-              { brand: "Nike MENA", type: "UGC Campaign", budget: "$12K", match: "8 talent" },
-              { brand: "Huda Beauty", type: "Product Launch", budget: "$25K", match: "14 talent" },
-              { brand: "Noon Daily", type: "Review Series", budget: "$8K", match: "6 talent" },
-            ].map((d, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: "#FAF7F2", borderRadius: 10, padding: "8px 12px", border: "1px solid #D5CFC5" }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: "#ECEAF2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#6B5B8A" }}>{d.brand[0]}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600 }}>{d.brand}</div>
-                  <div style={{ fontSize: 10, color: "#8A8279" }}>{d.type} · {d.match}</div>
-                </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#6B5B8A" }}>{d.budget}</div>
-              </div>
-            ))}
-          </div>
-        ),
-      },
-      {
-        title: "Full transparency on every deal",
-        subtitle: "Your creators see exactly what brands are paying. You see performance data and benchmarks. No hidden fees, no surprises — just trust.",
-        btnText: "See How It Works",
-        icon: <Target size={20} />,
-        visual: (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: 16 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: "#8A8279", textTransform: "uppercase" as const }}>Your Agency vs Market</div>
-            <div style={{ display: "flex", gap: 16, marginTop: 4 }}>
-              <div style={{ textAlign: "center" as const }}>
-                <div style={{ fontSize: 24, fontWeight: 800, color: "#6B5B8A" }}>94%</div>
-                <div style={{ fontSize: 10, color: "#8A8279" }}>Deal Close Rate</div>
-              </div>
-              <div style={{ width: 1, background: "#D5CFC5" }} />
-              <div style={{ textAlign: "center" as const }}>
-                <div style={{ fontSize: 24, fontWeight: 800, color: "#6B5B8A" }}>+32%</div>
-                <div style={{ fontSize: 10, color: "#8A8279" }}>vs Market Avg</div>
-              </div>
-            </div>
-            <div style={{ marginTop: 4, fontSize: 12, fontWeight: 600, color: "#3D6B3D", background: "#E4EDE4", padding: "4px 12px", borderRadius: 100 }}>Top 5% of agencies on MyPR</div>
-          </div>
-        ),
-      },
+    eyebrow: "For MENA talent managers",
+    headline: { top: "Land deals", script: "your roster", bottom: "actually deserves." },
+    sub: "Run your entire talent book from one dashboard. Match creators to briefs, track earnings, stay compliant — no more WhatsApp chaos.",
+    primaryCta: "Request access",
+    navAlt: [
+      { label: "For Creators", href: "/" },
+      { label: "For Brands", href: "/brand" },
     ],
-    socialTitle: "Agencies are landing bigger deals.",
-    socialSubtitle: "Better opportunities for your talent. Less time on admin.",
-    testimonials: [
-      { name: "Gulf Talent Mgmt", platform: "Agency", followers: "45 creators managed", earned: "320,000", quote: "We landed three deals in the first month that we never would have found on our own. Our talent is thriving." },
-      { name: "Stellar Agency", platform: "Agency", followers: "120 creators managed", earned: "580,000", quote: "The transparency changed everything. Our creators trust us more because they can see exactly what's happening." },
-      { name: "MENA Creators Co", platform: "Agency", followers: "80 creators managed", earned: "420,000", quote: "We went from spending 60% of our time on admin to actually supporting our talent and finding them better work." },
-      { name: "Palm Influence", platform: "Agency", followers: "35 creators managed", earned: "190,000", quote: "Our creators stay because we get them better deals. The market data makes negotiations so much easier." },
+    howSteps: [
+      { n: "01", title: "Invite your roster", body: "Onboard creators in minutes. Their handles, rates, and deliverables — in one place.", img: "/onboarding/verify-handles.png" },
+      { n: "02", title: "Match to briefs", body: "See live brand briefs and match your talent with a tap. Full market-rate transparency.", img: "/onboarding/pr-boxes-many.png" },
+      { n: "03", title: "Track everything", body: "Earnings, deal stages, compliance — all visible. Your cut is auto-calculated per deal.", img: "/onboarding/coin-stack.png" },
     ],
-    ctaTitle: "Your talent deserves better deals.",
-    ctaSubtitle: "Find opportunities, manage your roster, and build trust — all in one place.",
+    finalHeadline: "Your agency, finally organized.",
+    finalSub: "Stop losing deals to DMs. Request access and move your roster onto MyPR.",
   },
 };
 
-// ─── Phone Mockup ────────────────────────────────────────────
-function PhoneMockup({ audience }: { audience: Audience }) {
-  const barHeights = [35, 55, 42, 68, 50, 62, 45, 58, 72, 48, 60, 52];
+const BRANDS = [
+  "alo-yoga", "bateel", "byredo", "caffe-nero", "dr-smash",
+  "glossier", "gymshark", "huda-beauty", "ovn-bakery", "rare-beauty",
+];
 
-  if (audience === "brand") {
-    return (
-      <div className="phone-screen">
-        <div className="phone-statusbar"><span style={{ fontSize: 12, fontWeight: 600 }}>9:41</span><div /></div>
-        <div className="phone-hero-card">
-          <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.8, textTransform: "uppercase" as const, letterSpacing: 0.5, marginBottom: 4 }}>Campaign Performance</div>
-          <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: -0.8 }}>24 Briefs Live</div>
-          <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>142 creator applications</div>
-        </div>
-        <div className="phone-stats-row">
-          <div className="phone-stat"><div className="phone-stat-icon"><Search size={14} color="#6B5B8A" /></div><div className="phone-stat-num">2,400</div><div className="phone-stat-label">Creators</div></div>
-          <div className="phone-stat"><div className="phone-stat-icon"><DollarSign size={14} color="#6B5B8A" /></div><div className="phone-stat-num">$82</div><div className="phone-stat-label">Avg Cost</div></div>
-          <div className="phone-stat"><div className="phone-stat-icon"><Globe size={14} color="#6B5B8A" /></div><div className="phone-stat-num">6</div><div className="phone-stat-label">Markets</div></div>
-        </div>
-        <div className="phone-chart-card">
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1A", marginBottom: 12 }}>Content Delivered</div>
-          <div className="phone-bar-chart">{barHeights.map((h, i) => <div key={i} className="phone-bar" style={{ height: `${h}%` }} />)}</div>
-        </div>
-        <div className="phone-bottomnav">
-          <div className="phone-nav-item active"><Megaphone size={18} /><span>Briefs</span></div>
-          <div className="phone-nav-item"><Users size={18} /><span>Creators</span></div>
-        </div>
-      </div>
-    );
-  }
+const INDUSTRIES = [
+  { key: "beauty", label: "Beauty" },
+  { key: "fashion", label: "Fashion" },
+  { key: "food", label: "Food" },
+  { key: "hospitality", label: "Hospitality" },
+  { key: "wellness", label: "Wellness" },
+  { key: "tech", label: "Tech" },
+  { key: "home", label: "Home" },
+  { key: "entertainment", label: "Entertainment" },
+];
 
-  if (audience === "agency") {
-    return (
-      <div className="phone-screen">
-        <div className="phone-statusbar"><span style={{ fontSize: 12, fontWeight: 600 }}>9:41</span><div /></div>
-        <div className="phone-hero-card">
-          <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.8, textTransform: "uppercase" as const, letterSpacing: 0.5, marginBottom: 4 }}>Roster Value</div>
-          <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: -0.8 }}>$2.4M</div>
-          <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>84 managed creators</div>
-        </div>
-        <div className="phone-stats-row">
-          <div className="phone-stat"><div className="phone-stat-icon"><FileCheck size={14} color="#6B5B8A" /></div><div className="phone-stat-num">98%</div><div className="phone-stat-label">Compliant</div></div>
-          <div className="phone-stat"><div className="phone-stat-icon"><TrendingUp size={14} color="#6B5B8A" /></div><div className="phone-stat-num">94%</div><div className="phone-stat-label">Close Rate</div></div>
-          <div className="phone-stat"><div className="phone-stat-icon"><Star size={14} color="#6B5B8A" /></div><div className="phone-stat-num">Top 5%</div><div className="phone-stat-label">Ranked</div></div>
-        </div>
-        <div className="phone-chart-card">
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1A", marginBottom: 12 }}>Revenue This Quarter</div>
-          <div className="phone-bar-chart">{barHeights.map((h, i) => <div key={i} className="phone-bar" style={{ height: `${h}%` }} />)}</div>
-        </div>
-        <div className="phone-bottomnav">
-          <div className="phone-nav-item active"><Building2 size={18} /><span>Roster</span></div>
-          <div className="phone-nav-item"><BarChart3 size={18} /><span>Analytics</span></div>
-        </div>
-      </div>
-    );
-  }
+const BRAND_TYPES = [
+  { img: "/web/brand-type-pr.png", title: "PR Packages", body: "Free product drops from top brands — no deliverables required beyond an honest post." },
+  { img: "/web/brand-type-onsite.png", title: "On-site experiences", body: "Restaurants, spas, pop-ups, and launches. Show up, enjoy, share the story." },
+  { img: "/web/brand-type-ugc.png", title: "Paid UGC briefs", body: "Clear deliverables, guaranteed payout. Milestone bonuses for posts that perform." },
+];
 
-  // Creator (default)
+const LIFECYCLE = [
+  { img: "/lifecycle/state-draft.png", label: "Brief" },
+  { img: "/lifecycle/state-applied.png", label: "Apply" },
+  { img: "/lifecycle/state-approved.png", label: "Approved" },
+  { img: "/lifecycle/state-posted.png", label: "Posted" },
+  { img: "/lifecycle/state-proof.png", label: "Proof" },
+  { img: "/lifecycle/state-review.png", label: "Paid" },
+];
+
+// ─── Shared UI ────────────────────────────────────────────────
+function Logo({ className = "" }: { className?: string }) {
   return (
-    <div className="phone-screen">
-      <div className="phone-statusbar"><span style={{ fontSize: 12, fontWeight: 600 }}>9:41</span><div /></div>
-      <div className="phone-hero-card">
-        <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.8, letterSpacing: 0.5, textTransform: "uppercase" as const, marginBottom: 4 }}>New Opportunities</div>
-        <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: -0.8 }}>14 Near You</div>
-        <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>$4,280 earned so far</div>
+    <Link href="/" className={`inline-flex items-center ${className}`}>
+      <Image src="/icons/logo-mypr.png" alt="MyPR" width={140} height={50} priority className="h-9 w-auto" />
+    </Link>
+  );
+}
+
+function AppStoreBadge({ size = 52 }: { size?: number }) {
+  return (
+    <a
+      href="#final-cta"
+      aria-label="Download on the App Store (launching soon)"
+      className="inline-block transition-transform hover:-translate-y-0.5"
+    >
+      <Image src="/appstore-badge.svg" alt="Download on the App Store" width={size * 3.35} height={size} style={{ height: size, width: "auto" }} />
+    </a>
+  );
+}
+
+function Nav({ audience }: { audience: Audience }) {
+  const copy = COPY[audience];
+  return (
+    <nav className="max-w-[1180px] mx-auto flex items-center justify-between px-5 sm:px-8 py-5">
+      <Logo />
+      <div className="flex items-center gap-2 sm:gap-6">
+        {copy.navAlt.map((l) => (
+          <Link key={l.href} href={l.href} className="hidden sm:inline text-[14px] font-semibold text-[#1A1A1A]/75 hover:text-[#1A1A1A] transition">
+            {l.label}
+          </Link>
+        ))}
+        <a
+          href="#final-cta"
+          className="inline-flex items-center gap-1.5 rounded-full bg-[#1A1A1A] text-[#f8eee2] px-4 sm:px-5 py-2.5 text-[13px] sm:text-[14px] font-extrabold shadow-sm hover:shadow transition"
+        >
+          {copy.primaryCta}
+          <ArrowRight size={14} strokeWidth={3} />
+        </a>
       </div>
-      <div className="phone-stats-row">
-        <div className="phone-stat"><div className="phone-stat-icon"><Sparkles size={14} color="#6B5B8A" /></div><div className="phone-stat-num">14</div><div className="phone-stat-label">New Gigs</div></div>
-        <div className="phone-stat"><div className="phone-stat-icon"><TrendingUp size={14} color="#6B5B8A" /></div><div className="phone-stat-num">Lvl 2</div><div className="phone-stat-label">Rising</div></div>
-        <div className="phone-stat"><div className="phone-stat-icon"><Star size={14} color="#6B5B8A" /></div><div className="phone-stat-num">4.9</div><div className="phone-stat-label">Rating</div></div>
+    </nav>
+  );
+}
+
+// Floating mascot sticker around hero
+function FloatingSticker({
+  src, alt, className, rotate = 0, delay = 0, speed = "slow",
+}: {
+  src: string; alt: string; className: string; rotate?: number; delay?: number; speed?: "slow" | "med";
+}) {
+  return (
+    <div
+      className={`absolute pointer-events-none ${className} ${speed === "slow" ? "animate-float-slow" : "animate-float-med"}`}
+      style={{ ["--r" as string]: `${rotate}deg`, animationDelay: `${delay}s`, transform: `rotate(${rotate}deg)` }}
+    >
+      <Image src={src} alt={alt} width={180} height={180} className="drop-shadow-[0_12px_24px_rgba(26,26,26,0.08)]" />
+    </div>
+  );
+}
+
+// Phone that pulls forward on mount — surrounded by floating MyPR stickers
+function HeroPhone() {
+  return (
+    <div className="relative mx-auto w-full max-w-[760px] flex justify-center pt-6">
+      {/* Floating mascot stickers around phone */}
+      <div
+        className="hidden md:block absolute left-[4%] top-10 w-[128px] animate-float-slow pointer-events-none"
+        style={{ ["--r" as string]: "-14deg", transform: "rotate(-14deg)" }}
+      >
+        <Image src="/onboarding/pr-boxes-5.png" alt="" width={180} height={180} className="drop-shadow-[0_16px_32px_rgba(26,26,26,0.12)]" />
       </div>
-      <div style={{ padding: "0 0 8px" }}>
-        {[
-          { brand: "Nike MENA", amount: "$250", type: "Try new running shoes" },
-          { brand: "Noon", amount: "$180", type: "Review a gadget" },
-          { brand: "Huda Beauty", amount: "$400", type: "Test a new skincare line" },
-        ].map((job, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, background: "#FAF7F2", borderRadius: 14, padding: "10px 12px", border: "1px solid #D5CFC5", marginBottom: 6 }}>
-            <div style={{ width: 32, height: 32, background: "#ECEAF2", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, color: "#6B5B8A" }}>{job.brand[0]}</div>
-            <div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1A" }}>{job.brand}</div><div style={{ fontSize: 11, color: "#8A8279" }}>{job.type}</div></div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#6B5B8A" }}>{job.amount}</div>
+      <div
+        className="hidden md:block absolute right-[6%] top-4 w-[116px] animate-float-med pointer-events-none"
+        style={{ ["--r" as string]: "12deg", transform: "rotate(12deg)", animationDelay: "0.6s" }}
+      >
+        <Image src="/onboarding/coin-stack.png" alt="" width={160} height={160} className="drop-shadow-[0_16px_32px_rgba(26,26,26,0.12)]" />
+      </div>
+      <div
+        className="hidden lg:block absolute right-[2%] bottom-24 w-[108px] animate-float-slow pointer-events-none"
+        style={{ ["--r" as string]: "8deg", transform: "rotate(8deg)", animationDelay: "0.9s" }}
+      >
+        <Image src="/web/mascot-mailbox.png" alt="" width={160} height={160} className="drop-shadow-[0_16px_32px_rgba(26,26,26,0.12)]" />
+      </div>
+      <div
+        className="hidden lg:block absolute left-[2%] bottom-28 w-[108px] animate-float-med pointer-events-none"
+        style={{ ["--r" as string]: "-10deg", transform: "rotate(-10deg)", animationDelay: "0.4s" }}
+      >
+        <Image src="/onboarding/follower-tier-badge.png" alt="" width={160} height={160} className="drop-shadow-[0_16px_32px_rgba(26,26,26,0.12)]" />
+      </div>
+
+      {/* Phone — tilts forward on load */}
+      <motion.div
+        initial={{ opacity: 1, rotateX: 22, scale: 0.92, y: 40 }}
+        animate={{ opacity: 1, rotateX: 0, scale: 1, y: 0 }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+        style={{ transformPerspective: 1400, transformOrigin: "center top" }}
+        className="relative w-[260px] sm:w-[300px] lg:w-[340px]"
+      >
+        <div className="relative rounded-[44px] border-[7px] border-[#1A1A1A] bg-[#1A1A1A] shadow-[0_40px_80px_-20px_rgba(26,26,26,0.45),0_18px_40px_-12px_rgba(26,26,26,0.3)]">
+          <div className="absolute top-[6px] left-1/2 -translate-x-1/2 w-[96px] h-[22px] bg-[#1A1A1A] rounded-full z-10" />
+          <div className="rounded-[38px] overflow-hidden bg-[#f8eee2]">
+            <Image
+              src="/screenshots/mypr-explore.png"
+              alt="MyPR explore screen — PR deals near you"
+              width={1179}
+              height={2556}
+              priority
+              className="block w-full h-auto"
+            />
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// Hero section
+function Hero({ audience }: { audience: Audience }) {
+  const copy = COPY[audience];
+  return (
+    <section className="relative overflow-hidden pb-20 sm:pb-32">
+      <Nav audience={audience} />
+
+      <div className="relative max-w-[1180px] mx-auto px-5 sm:px-8 pt-8 sm:pt-16 pb-8">
+        {/* Floating stickers — decorative */}
+        <FloatingSticker src="/onboarding/pr-boxes-3.png" alt="" className="hidden md:block top-0 -left-6 w-[140px]" rotate={-8} />
+        <FloatingSticker src="/onboarding/coin-stack.png" alt="" className="hidden md:block top-10 -right-2 w-[130px]" rotate={12} delay={0.6} speed="med" />
+        <FloatingSticker src="/onboarding/follower-tier-badge.png" alt="" className="hidden lg:block top-[280px] -left-8 w-[120px]" rotate={-6} delay={0.3} speed="med" />
+
+        <div className="relative text-center max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 1, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 rounded-full bg-[#1A1A1A]/5 border border-[#1A1A1A]/10 px-4 py-1.5 text-[12px] font-semibold text-[#1A1A1A]/75 mb-6"
+          >
+            <Sparkles size={12} strokeWidth={2.5} />
+            {copy.eyebrow}
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 1, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.05 }}
+            className="font-black tracking-[-0.035em] leading-[0.95] text-[#1A1A1A] text-[52px] sm:text-[76px] lg:text-[96px]"
+          >
+            <span className="block">{copy.headline.top}</span>
+            <span className="block">
+              <span className="relative inline-block">
+                <span className="relative z-10 italic font-black" style={{ fontFamily: "var(--font-sans)" }}>
+                  {copy.headline.script}
+                </span>
+                <span
+                  aria-hidden
+                  className="absolute left-0 right-0 bottom-[8%] h-[22%] bg-[#1A1A1A]/10 -skew-y-2"
+                />
+              </span>
+            </span>
+            {copy.headline.bottom && <span className="block">{copy.headline.bottom}</span>}
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 1, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mt-7 mx-auto max-w-[620px] text-[17px] sm:text-[19px] leading-[1.5] text-[#1A1A1A]/70 font-semibold"
+          >
+            {copy.sub}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 1, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <AppStoreBadge size={58} />
+            <a
+              href="#how"
+              className="inline-flex items-center gap-2 rounded-full bg-[#1A1A1A] text-[#f8eee2] px-7 py-4 text-[15px] font-extrabold hover:-translate-y-0.5 transition"
+            >
+              {copy.primaryCta}
+              <ArrowRight size={16} strokeWidth={3} />
+            </a>
+          </motion.div>
+
+          <div className="mt-4 text-[12px] font-bold text-[#1A1A1A]/45 uppercase tracking-[0.1em]">
+            Launching soon on iOS · UAE first, Gulf next
+          </div>
+        </div>
+
+        <div className="mt-16 sm:mt-20 relative">
+          <HeroPhone />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Brand strip (marquee)
+function BrandMarquee() {
+  const row = [...BRANDS, ...BRANDS];
+  return (
+    <section className="border-y border-[#1A1A1A]/10 bg-[#f3e7d6] py-8 overflow-hidden">
+      <div className="max-w-[1180px] mx-auto px-5 sm:px-8 mb-5">
+        <div className="text-center text-[12px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/55">
+          Brands onboarding with MyPR
+        </div>
+      </div>
+      <div className="flex animate-marquee gap-14 w-max items-center">
+        {row.map((b, i) => (
+          <div key={`${b}-${i}`} className="shrink-0 h-10 flex items-center">
+            <Image src={`/brands/${b}.png`} alt={b} width={180} height={60} className="h-9 w-auto object-contain opacity-80" />
           </div>
         ))}
       </div>
-      <div className="phone-bottomnav">
-        <div className="phone-nav-item active"><Sparkles size={18} /><span>Discover</span></div>
-        <div className="phone-nav-item"><Wallet size={18} /><span>Earnings</span></div>
-      </div>
-    </div>
+    </section>
   );
 }
 
-// ─── Testimonial Card ────────────────────────────────────────
-function TestimonialCard({ name, platform, followers, earned, quote }: {
-  name: string; platform: string; followers: string; earned: string; quote: string;
-}) {
+// How It Works
+function HowItWorks({ audience }: { audience: Audience }) {
+  const copy = COPY[audience];
   return (
-    <div className="testimonial-card">
-      <div className="testimonial-video-placeholder">
-        <div className="testimonial-play-icon"><Play size={24} fill="#FAF7F2" /></div>
-        <div className="testimonial-earned-badge">${earned} Earned</div>
+    <section id="how" className="max-w-[1180px] mx-auto px-5 sm:px-8 py-24 sm:py-32">
+      <div className="max-w-3xl">
+        <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">How it works</div>
+        <h2 className="text-[40px] sm:text-[56px] font-black leading-[1] tracking-[-0.03em] text-[#1A1A1A]">
+          Land your first deal in <span className="italic">three taps.</span>
+        </h2>
       </div>
-      <p className="testimonial-quote">&ldquo;{quote}&rdquo;</p>
-      <div className="testimonial-author"><strong>{name}</strong><span>{followers} on {platform}</span></div>
-    </div>
+
+      <div className="mt-14 grid md:grid-cols-3 gap-6">
+        {copy.howSteps.map((s, i) => (
+          <motion.div
+            key={s.n}
+            initial={{ opacity: 1, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: i * 0.1 }}
+            className="relative rounded-[28px] bg-[#FEFCF8] border border-[#1A1A1A]/8 p-7 pt-8 shadow-[0_2px_0_rgba(26,26,26,0.04)] hover:shadow-[0_10px_30px_-8px_rgba(26,26,26,0.12)] transition"
+          >
+            <div className="absolute -top-4 left-7 inline-flex items-center justify-center rounded-full bg-[#1A1A1A] text-[#f8eee2] w-11 h-11 text-[13px] font-black">
+              {s.n}
+            </div>
+            <div className="aspect-square w-full rounded-2xl bg-[#f3e7d6] flex items-center justify-center mb-5 overflow-hidden">
+              <Image src={s.img} alt={s.title} width={360} height={360} className="w-[78%] h-auto" />
+            </div>
+            <h3 className="text-[22px] font-black tracking-[-0.02em] text-[#1A1A1A] mb-2">{s.title}</h3>
+            <p className="text-[15px] text-[#1A1A1A]/65 leading-[1.55] font-semibold">{s.body}</p>
+          </motion.div>
+        ))}
+      </div>
+    </section>
   );
 }
 
-// ─── Main Component ──────────────────────────────────────────
-export default function LandingPage({ audience = "creator" }: { audience?: Audience }) {
-  const [scrollY, setScrollY] = useState(0);
-  const heroRef = useRef<HTMLElement>(null);
-  const config = configs[audience];
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const tiltProgress = Math.min(scrollY / 600, 1);
-  const rotateX = 20 - tiltProgress * 20;
-  const scale = 0.88 + tiltProgress * 0.12;
-
+// What You Can Land
+function WhatYouCanLand() {
   return (
-    <>
-      <style>{styles}</style>
-
-      <section className="hero-section" ref={heroRef}>
-        <div className="cloud cloud-1" />
-        <div className="cloud cloud-2" />
-        <div className="cloud cloud-3" />
-
-        <nav className="navbar">
-          <a href="/" className="nav-logo"><div className="nav-logo-icon">M</div>MyPR</a>
-          <div className="nav-links">
-            {config.navLinks.map(l => <a key={l.href} href={l.href}>{l.label}</a>)}
-            <a href="#" className="nav-signup">{config.ctaText}</a>
+    <section className="bg-[#FEFCF8] border-y border-[#1A1A1A]/8 py-24 sm:py-32">
+      <div className="max-w-[1180px] mx-auto px-5 sm:px-8">
+        <div className="flex items-end justify-between gap-8 mb-14 flex-wrap">
+          <div className="max-w-2xl">
+            <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">Three ways to earn</div>
+            <h2 className="text-[40px] sm:text-[56px] font-black leading-[1] tracking-[-0.03em] text-[#1A1A1A]">
+              Deals that meet you <span className="italic">where you are.</span>
+            </h2>
           </div>
-        </nav>
-
-        <div className="hero-content">
-          <p className="hero-trust">{config.trustLine}</p>
-          <h1 className="hero-headline">{config.headline}</h1>
-          <button className="hero-cta">{config.ctaText} <ArrowRight size={18} /></button>
-        </div>
-
-        <div className="phone-wrapper">
-          <div className="phone-3d" style={{ transform: `rotateX(${rotateX}deg) scale(${scale})`, transformOrigin: "center top" }}>
-            <div className="phone-inner"><PhoneMockup audience={audience} /></div>
-          </div>
-        </div>
-      </section>
-
-      <section className="features-section">
-        <div className="features-header">
-          <h2 className="features-title">
-            {audience === "creator" && "Your social following is more valuable than you think."}
-            {audience === "brand" && "The easiest way to get UGC — without the waste."}
-            {audience === "agency" && "Everything your talent needs. Everything you need."}
-          </h2>
-          <p className="features-subtitle">
-            {audience === "creator" && "Get paid to try new products, visit new places, and share what you love."}
-            {audience === "brand" && "Post a brief, pay market price, get authentic content in days."}
-            {audience === "agency" && "Better deals, full transparency, and less time on admin."}
+          <p className="max-w-sm text-[16px] text-[#1A1A1A]/65 font-semibold">
+            From free product drops to paid briefs — MyPR ladders you from your first box to five-figure campaigns.
           </p>
         </div>
-        <div className="features-grid">
-          {config.features.map((f, i) => (
-            <div key={i} className="feature-card">
-              <div className="feature-card-icon">{f.icon}</div>
-              <h3 className="feature-card-title">{f.title}</h3>
-              <p className="feature-card-subtitle">{f.subtitle}</p>
-              <div className="feature-card-visual">{f.visual}</div>
-              <button className="feature-card-btn">{f.btnText}</button>
-            </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {BRAND_TYPES.map((t, i) => (
+            <motion.div
+              key={t.title}
+              initial={{ opacity: 1, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.6, delay: i * 0.1 }}
+              className="rounded-[28px] bg-[#f8eee2] p-6 border border-[#1A1A1A]/8 hover:-translate-y-1 hover:shadow-[0_14px_36px_-12px_rgba(26,26,26,0.15)] transition"
+            >
+              <div className="rounded-2xl overflow-hidden bg-[#ede3d1] aspect-[4/3] flex items-center justify-center mb-5">
+                <Image src={t.img} alt={t.title} width={600} height={450} className="w-full h-full object-cover" />
+              </div>
+              <h3 className="text-[22px] font-black text-[#1A1A1A] tracking-[-0.015em] mb-2">{t.title}</h3>
+              <p className="text-[15px] text-[#1A1A1A]/65 leading-[1.55] font-semibold">{t.body}</p>
+            </motion.div>
           ))}
         </div>
-      </section>
-
-      <section className="social-proof-section">
-        <h2 className="social-proof-title">{config.socialTitle}</h2>
-        <p className="social-proof-subtitle">{config.socialSubtitle}</p>
-        <div className="testimonials-grid">
-          {config.testimonials.map((t, i) => <TestimonialCard key={i} {...t} />)}
-        </div>
-      </section>
-
-      <section className="cta-section">
-        <h2 className="cta-title">{config.ctaTitle}</h2>
-        <p className="cta-subtitle">{config.ctaSubtitle}</p>
-        <button className="cta-btn">{config.ctaText} <ArrowRight size={20} /></button>
-      </section>
-
-      <footer className="footer">
-        <span>&copy; 2026 MyPR Inc.</span>
-        <div className="footer-links"><a href="/terms">Terms</a><a href="/privacy">Privacy</a></div>
-      </footer>
-    </>
+      </div>
+    </section>
   );
 }
 
-const styles = `
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --accent: #6B5B8A; --accent-soft: #ECEAF2; --gradient-start: #6B5B8A; --gradient-end: #1A1A1A;
-  --bg: #f8f0e3; --surface: #FAF7F2; --surface-muted: #EDE8DF; --border: #D5CFC5;
-  --text-primary: #1A1A1A; --text-muted: #8A8279; --white: #FAF7F2;
-  --sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
-  --serif: 'Georgia', serif;
+// Industries grid
+function Industries() {
+  return (
+    <section className="max-w-[1180px] mx-auto px-5 sm:px-8 py-24 sm:py-32">
+      <div className="max-w-2xl mb-14">
+        <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">Every niche</div>
+        <h2 className="text-[40px] sm:text-[56px] font-black leading-[1] tracking-[-0.03em] text-[#1A1A1A]">
+          Your corner of the <span className="italic">internet</span>, covered.
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {INDUSTRIES.map((ind, i) => (
+          <motion.div
+            key={ind.key}
+            initial={{ opacity: 1, scale: 1 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, delay: i * 0.04 }}
+            className="group rounded-3xl bg-[#FEFCF8] border border-[#1A1A1A]/8 p-5 flex flex-col items-center gap-3 hover:-translate-y-1 hover:shadow-[0_10px_30px_-8px_rgba(26,26,26,0.12)] transition"
+          >
+            <div className="w-[72px] h-[72px] rounded-2xl bg-[#f3e7d6] flex items-center justify-center">
+              <Image src={`/industry/industry-${ind.key}.png`} alt={ind.label} width={80} height={80} className="w-12 h-12" />
+            </div>
+            <span className="text-[14px] font-black text-[#1A1A1A] tracking-[-0.01em]">{ind.label}</span>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
 }
-body { font-family: var(--sans); color: var(--text-primary); overflow-x: hidden; background: var(--bg); -webkit-font-smoothing: antialiased; }
 
-.hero-section { position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; padding-bottom: 80px;
-  background: linear-gradient(180deg, #3D2E5C 0%, #4A3D6B 8%, #5A4D7A 18%, #6B5B8A 30%, #8A7DA4 45%, #B8AEC8 60%, #D8D0E0 75%, #E8E0D0 88%, #f8f0e3 100%); }
-.hero-section::before { content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse 120% 60% at 50% 5%, rgba(255,255,255,0.1) 0%, transparent 60%), radial-gradient(ellipse 80% 40% at 30% 70%, rgba(255,255,255,0.12) 0%, transparent 50%);
-  pointer-events: none; z-index: 1; }
-.hero-section > * { position: relative; z-index: 2; }
+// Lifecycle visual
+function Lifecycle() {
+  return (
+    <section className="bg-[#f3e7d6] border-y border-[#1A1A1A]/10 py-24 sm:py-32 overflow-hidden">
+      <div className="max-w-[1180px] mx-auto px-5 sm:px-8">
+        <div className="flex items-end justify-between gap-8 mb-14 flex-wrap">
+          <div className="max-w-2xl">
+            <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">Every step tracked</div>
+            <h2 className="text-[40px] sm:text-[56px] font-black leading-[1] tracking-[-0.03em] text-[#1A1A1A]">
+              From brief to <span className="italic">bank account.</span>
+            </h2>
+          </div>
+          <p className="max-w-sm text-[16px] text-[#1A1A1A]/65 font-semibold">
+            No guessing what&apos;s happening with your deal. Live status at every stage, for creators, brands and agencies.
+          </p>
+        </div>
 
-.cloud { position: absolute; background: rgba(255,255,255,0.08); border-radius: 50%; filter: blur(50px); z-index: 1; }
-.cloud-1 { width: 500px; height: 200px; bottom: 5%; left: -5%; }
-.cloud-2 { width: 400px; height: 160px; bottom: 8%; right: -3%; }
-.cloud-3 { width: 600px; height: 180px; bottom: 2%; left: 30%; }
-
-.navbar { width: 100%; max-width: 1200px; display: flex; align-items: center; justify-content: space-between; padding: 24px 32px; z-index: 10; }
-.nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 22px; color: var(--white); letter-spacing: -0.4px; text-decoration: none; }
-.nav-logo-icon { width: 36px; height: 36px; background: var(--white); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-weight: 800; font-size: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
-.nav-links { display: flex; align-items: center; gap: 32px; }
-.nav-links a { color: var(--white); text-decoration: none; font-size: 15px; font-weight: 500; opacity: 0.9; transition: opacity 0.2s; }
-.nav-links a:hover { opacity: 1; }
-.nav-signup { background: rgba(255,255,255,0.15) !important; backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.25); padding: 10px 24px; border-radius: 100px; font-weight: 600 !important; cursor: pointer; }
-.nav-signup:hover { background: rgba(255,255,255,0.3) !important; }
-
-.hero-content { text-align: center; padding: 48px 24px 0; max-width: 900px; }
-.hero-trust { font-size: 15px; color: rgba(250,247,242,0.8); margin-bottom: 20px; font-weight: 500; }
-.hero-headline { font-size: clamp(44px, 7vw, 82px); font-weight: 800; color: var(--white); line-height: 1.05; margin-bottom: 32px; letter-spacing: -2px; text-shadow: 0 2px 20px rgba(0,0,0,0.1); }
-.hero-headline em { font-style: italic; font-family: var(--serif); font-weight: 400; letter-spacing: 0; }
-.hero-cta { display: inline-flex; align-items: center; gap: 8px; padding: 16px 40px; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); border: none; border-radius: 100px; color: var(--white); font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 24px rgba(107,91,138,0.35); min-height: 56px; }
-.hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(107,91,138,0.45); }
-
-.phone-wrapper { width: 100%; max-width: 340px; margin: 48px auto 0; perspective: 1200px; padding: 0 24px; }
-.phone-3d { border-radius: 44px; border: 6px solid #1A1A1A; background: #1A1A1A; box-shadow: 0 0 0 2px rgba(255,255,255,0.06), 0 20px 60px rgba(26,26,26,0.4), 0 60px 80px rgba(26,26,26,0.15); transition: transform 0.1s linear; position: relative; overflow: hidden; }
-.phone-3d::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 28px; background: #1A1A1A; border-radius: 0 0 16px 16px; z-index: 10; }
-.phone-inner { border-radius: 38px; overflow: hidden; background: var(--bg); }
-.phone-screen { min-height: 620px; padding: 48px 14px 0; position: relative; }
-.phone-statusbar { display: flex; justify-content: space-between; align-items: center; padding: 0 8px 10px; color: #1A1A1A; }
-.phone-hero-card { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: #FAF7F2; padding: 18px; border-radius: 20px; margin-bottom: 12px; box-shadow: 0 8px 24px rgba(107,91,138,0.25); }
-.phone-stats-row { display: flex; gap: 6px; margin-bottom: 12px; }
-.phone-stat { flex: 1; background: #FAF7F2; border-radius: 14px; padding: 10px 6px; text-align: center; border: 1px solid var(--border); }
-.phone-stat-icon { width: 26px; height: 26px; background: var(--accent-soft); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 0 auto 4px; }
-.phone-stat-num { font-size: 14px; font-weight: 800; color: var(--text-primary); }
-.phone-stat-label { font-size: 9px; color: var(--text-muted); font-weight: 500; margin-top: 1px; }
-.phone-chart-card { background: #FAF7F2; border-radius: 14px; padding: 14px; border: 1px solid var(--border); margin-bottom: 12px; }
-.phone-bar-chart { display: flex; align-items: flex-end; gap: 3px; height: 50px; }
-.phone-bar { flex: 1; background: linear-gradient(to top, var(--accent), #4A3D6B); border-radius: 3px 3px 0 0; opacity: 0.85; }
-.phone-bottomnav { display: flex; background: #FAF7F2; border-top: 1px solid var(--border); margin: 0 -14px; padding: 10px 0 28px; }
-.phone-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; color: var(--text-muted); }
-.phone-nav-item.active { color: var(--accent); }
-
-.features-section { padding: 100px 24px 80px; max-width: 1200px; margin: 0 auto; }
-.features-header { text-align: left; margin-bottom: 16px; }
-.features-title { font-size: clamp(28px, 4vw, 44px); font-weight: 800; color: var(--text-primary); line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.8px; }
-.features-subtitle { font-size: 17px; color: var(--text-muted); margin-bottom: 48px; }
-.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.feature-card { background: var(--surface); border-radius: 20px; padding: 28px 24px; border: 1px solid var(--border); transition: all 0.3s; }
-.feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(26,26,26,0.06); }
-.feature-card-icon { width: 40px; height: 40px; background: var(--accent-soft); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent); margin-bottom: 16px; }
-.feature-card-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; color: var(--text-primary); letter-spacing: -0.3px; }
-.feature-card-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
-.feature-card-visual { min-height: 180px; background: var(--surface-muted); border-radius: 14px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.feature-card-btn { width: 100%; padding: 14px; border-radius: 100px; border: none; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: #FAF7F2; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; min-height: 48px; }
-.feature-card-btn:hover { box-shadow: 0 6px 20px rgba(107,91,138,0.3); }
-
-.social-proof-section { padding: 80px 24px; text-align: center; max-width: 1200px; margin: 0 auto; }
-.social-proof-title { font-size: clamp(28px, 4vw, 44px); font-weight: 800; margin-bottom: 12px; letter-spacing: -0.8px; }
-.social-proof-subtitle { font-size: 17px; color: var(--text-muted); margin-bottom: 48px; }
-.testimonials-grid { display: flex; gap: 24px; overflow-x: auto; padding-bottom: 16px; scroll-snap-type: x mandatory; }
-.testimonials-grid::-webkit-scrollbar { display: none; }
-.testimonial-card { min-width: 280px; max-width: 280px; scroll-snap-align: start; text-align: left; }
-.testimonial-video-placeholder { width: 100%; height: 340px; border-radius: 20px; background: linear-gradient(145deg, #4A3D6B, #1A1A1A); position: relative; overflow: hidden; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; }
-.testimonial-video-placeholder::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent 50%); }
-.testimonial-play-icon { width: 48px; height: 48px; background: rgba(250,247,242,0.12); backdrop-filter: blur(8px); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2; }
-.testimonial-earned-badge { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: #FAF7F2; padding: 8px 24px; border-radius: 100px; font-weight: 700; font-size: 14px; z-index: 3; white-space: nowrap; }
-.testimonial-quote { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px; min-height: 60px; }
-.testimonial-author { display: flex; flex-direction: column; gap: 2px; }
-.testimonial-author strong { font-size: 14px; color: var(--text-primary); }
-.testimonial-author span { font-size: 12px; color: var(--text-muted); }
-
-.cta-section { text-align: center; padding: 80px 24px 100px; }
-.cta-title { font-size: clamp(28px, 4.5vw, 48px); font-weight: 800; margin-bottom: 12px; letter-spacing: -0.8px; }
-.cta-subtitle { font-size: 17px; color: var(--text-muted); margin-bottom: 32px; }
-.cta-btn { display: inline-flex; align-items: center; gap: 8px; padding: 18px 48px; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: #FAF7F2; border: none; border-radius: 100px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 24px rgba(107,91,138,0.25); min-height: 56px; }
-.cta-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 36px rgba(107,91,138,0.4); }
-
-.footer { padding: 28px 24px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto; }
-.footer-links { display: flex; gap: 24px; }
-.footer-links a { color: var(--text-muted); text-decoration: none; }
-.footer-links a:hover { color: var(--text-primary); }
-
-@media (max-width: 900px) {
-  .features-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
-  .navbar { padding: 16px 20px; }
-  .nav-links a:not(.nav-signup) { display: none; }
-  .footer { flex-direction: column; gap: 12px; align-items: center; }
+        <div className="relative grid grid-cols-3 md:grid-cols-6 gap-4 sm:gap-6">
+          {LIFECYCLE.map((l, i) => (
+            <motion.div
+              key={l.label}
+              initial={{ opacity: 1, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5, delay: i * 0.06 }}
+              className="flex flex-col items-center gap-3"
+            >
+              <div className="relative w-[96px] h-[96px] sm:w-[112px] sm:h-[112px] rounded-full bg-[#FEFCF8] border border-[#1A1A1A]/8 shadow-[0_4px_12px_rgba(26,26,26,0.04)] flex items-center justify-center">
+                <Image src={l.img} alt={l.label} width={140} height={140} className="w-[68%] h-auto" />
+                <span className="absolute -top-2 -left-2 w-7 h-7 rounded-full bg-[#1A1A1A] text-[#f8eee2] text-[11px] font-black flex items-center justify-center">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+              </div>
+              <span className="text-[14px] font-black tracking-[-0.01em] text-[#1A1A1A]">{l.label}</span>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
-`;
+
+// Final CTA
+function FinalCTA({ audience }: { audience: Audience }) {
+  const copy = COPY[audience];
+  return (
+    <section id="final-cta" className="relative py-24 sm:py-32 overflow-hidden">
+      <div className="max-w-[1180px] mx-auto px-5 sm:px-8">
+        <div className="relative rounded-[32px] bg-[#FEFCF8] border border-[#1A1A1A]/10 px-6 sm:px-12 py-16 sm:py-20 text-center overflow-hidden">
+          {/* mascot decorations */}
+          <div className="hidden md:block absolute -top-4 -left-6 w-[180px] opacity-90 pointer-events-none">
+            <Image src="/illustrations/hero-mascot.png" alt="" width={220} height={220} className="rotate-[-8deg]" />
+          </div>
+          <div className="hidden md:block absolute -bottom-6 -right-4 w-[160px] opacity-90 pointer-events-none">
+            <Image src="/onboarding/pr-boxes-many.png" alt="" width={200} height={200} className="rotate-[10deg]" />
+          </div>
+
+          <div className="relative">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#1A1A1A] text-[#f8eee2] px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.14em] mb-6">
+              <CheckCircle2 size={12} strokeWidth={2.8} /> Launching soon
+            </div>
+            <h2 className="text-[44px] sm:text-[68px] font-black leading-[0.98] tracking-[-0.035em] text-[#1A1A1A] mb-4">
+              {copy.finalHeadline}
+            </h2>
+            <p className="text-[16px] sm:text-[18px] text-[#1A1A1A]/70 font-semibold max-w-xl mx-auto mb-9">
+              {copy.finalSub}
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <AppStoreBadge size={64} />
+              <a
+                href="#"
+                className="inline-flex items-center gap-2 rounded-full bg-[#1A1A1A] text-[#f8eee2] px-8 py-4 text-[15px] font-extrabold hover:-translate-y-0.5 transition"
+              >
+                Join the waitlist
+                <ArrowRight size={16} strokeWidth={3} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t border-[#1A1A1A]/10">
+      <div className="max-w-[1180px] mx-auto px-5 sm:px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-3">
+          <Image src="/icons/logo-mypr.png" alt="MyPR" width={90} height={32} className="h-7 w-auto opacity-80" />
+          <span className="text-[13px] font-bold text-[#1A1A1A]/55">© 2026 MyPR Inc.</span>
+        </div>
+        <div className="flex items-center gap-6 text-[13px] font-bold text-[#1A1A1A]/55">
+          <Link href="/" className="hover:text-[#1A1A1A]">Creators</Link>
+          <Link href="/brand" className="hover:text-[#1A1A1A]">Brands</Link>
+          <Link href="/agency" className="hover:text-[#1A1A1A]">Agencies</Link>
+          <Link href="/terms" className="hover:text-[#1A1A1A]">Terms</Link>
+          <Link href="/privacy" className="hover:text-[#1A1A1A]">Privacy</Link>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────
+export default function LandingPage({ audience = "creator" }: { audience?: Audience }) {
+  return (
+    <main className="bg-[#f8eee2] text-[#1A1A1A]">
+      <Hero audience={audience} />
+      <BrandMarquee />
+      <HowItWorks audience={audience} />
+      <WhatYouCanLand />
+      <Industries />
+      <Lifecycle />
+      <FinalCTA audience={audience} />
+      <Footer />
+    </main>
+  );
+}

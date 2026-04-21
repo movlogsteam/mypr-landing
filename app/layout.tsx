@@ -1,24 +1,18 @@
 import type { Metadata } from "next";
-import { DM_Sans, Cormorant_Garamond } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+const nunito = Nunito({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-const cormorant = Cormorant_Garamond({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["400", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "MyPR - The New Way for Creators To Make Money",
+  title: "MyPR — Turn your influence into currency",
   description:
-    "Find brand deals, create UGC content, and collect payments. Trusted by brands and creators across MENA.",
+    "The UAE-first creator-deal platform. Apply to PR boxes, on-site experiences, and paid UGC briefs from verified brands.",
 };
 
 export default function RootLayout({
@@ -28,9 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dmSans.variable} ${cormorant.variable} antialiased`}>
-        {children}
-      </body>
+      <body className={`${nunito.variable} antialiased`}>{children}</body>
     </html>
   );
 }
