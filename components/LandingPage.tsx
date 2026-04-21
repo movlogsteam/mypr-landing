@@ -8,19 +8,35 @@ import { ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
 type Audience = "creator" | "brand" | "agency";
 
 // ─── Copy per audience ─────────────────────────────────────────
-const COPY: Record<
-  Audience,
-  {
-    eyebrow: string;
-    headline: { top: string; script: string; bottom?: string };
-    sub: string;
-    primaryCta: string;
-    navAlt: { label: string; href: string }[];
-    howSteps: { n: string; title: string; body: string; img: string }[];
-    finalHeadline: string;
-    finalSub: string;
-  }
-> = {
+type CopyBlock = {
+  eyebrow: string;
+  headline: { top: string; script: string; bottom?: string };
+  sub: string;
+  primaryCta: string;
+  navAlt: { label: string; href: string }[];
+  brandStripLabel: string;
+  howEyebrow: string;
+  howTitle: string;
+  howScript: string;
+  howSteps: { n: string; title: string; body: string; img: string }[];
+  typesEyebrow: string;
+  typesTitle: string;
+  typesScript: string;
+  typesSub: string;
+  types: { img: string; title: string; body: string }[];
+  industriesEyebrow: string;
+  industriesTitle: string;
+  industriesScript: string;
+  lifecycleEyebrow: string;
+  lifecycleTitle: string;
+  lifecycleScript: string;
+  lifecycleSub: string;
+  finalHeadline: string;
+  finalSub: string;
+  finalWaitlist: string;
+};
+
+const COPY: Record<Audience, CopyBlock> = {
   creator: {
     eyebrow: "The creator deal platform for MENA",
     headline: { top: "Turn your", script: "influence", bottom: "into currency." },
@@ -30,47 +46,110 @@ const COPY: Record<
       { label: "For Brands", href: "/brand" },
       { label: "For Agencies", href: "/agency" },
     ],
+    brandStripLabel: "Brands already onboarding with MyPR",
+    howEyebrow: "How it works",
+    howTitle: "Land your first deal in",
+    howScript: "three taps.",
     howSteps: [
       { n: "01", title: "Verify your handles", body: "Link Instagram & TikTok in under 60 seconds. We match you to deals you actually qualify for.", img: "/onboarding/verify-handles.png" },
       { n: "02", title: "Apply to brand deals", body: "Swipe PR packages, on-site visits, and paid briefs from 200+ UAE & KSA brands.", img: "/onboarding/pr-boxes-many.png" },
       { n: "03", title: "Get paid to post", body: "Upload proof, get approved, get paid. Base payout plus milestone bonuses — straight to your wallet.", img: "/onboarding/coin-stack.png" },
     ],
+    typesEyebrow: "Three ways to earn",
+    typesTitle: "Deals that meet you",
+    typesScript: "where you are.",
+    typesSub: "From free product drops to paid briefs — MyPR ladders you from your first box to five-figure campaigns.",
+    types: [
+      { img: "/web/brand-type-pr.png", title: "PR Packages", body: "Free product drops from top brands — no deliverables required beyond an honest post." },
+      { img: "/web/brand-type-onsite.png", title: "On-site experiences", body: "Restaurants, spas, pop-ups, and launches. Show up, enjoy, share the story." },
+      { img: "/web/brand-type-ugc.png", title: "Paid UGC briefs", body: "Clear deliverables, guaranteed payout. Milestone bonuses for posts that perform." },
+    ],
+    industriesEyebrow: "Every niche",
+    industriesTitle: "Your corner of the",
+    industriesScript: "internet, covered.",
+    lifecycleEyebrow: "Every step tracked",
+    lifecycleTitle: "From brief to",
+    lifecycleScript: "bank account.",
+    lifecycleSub: "No guessing what's happening with your deal. Live status at every stage — applied, approved, posted, paid.",
     finalHeadline: "Your first PR box is waiting.",
     finalSub: "Launching on iOS soon. Join the waitlist and get early access before the public drop.",
+    finalWaitlist: "Join the waitlist",
   },
   brand: {
     eyebrow: "The easiest UGC engine in the Gulf",
     headline: { top: "Real creators.", script: "Real content.", bottom: "Shipped in days." },
-    sub: "Post a brief, set a budget, get authentic content from vetted creators across the UAE & KSA. No agencies, no month-long cycles.",
+    sub: "Brief a campaign, set a budget, get authentic content from vetted MENA creators — in days, not months. No agency markups, no email chains.",
     primaryCta: "Book a demo",
     navAlt: [
       { label: "For Creators", href: "/" },
       { label: "For Agencies", href: "/agency" },
     ],
+    brandStripLabel: "Brands already running on MyPR",
+    howEyebrow: "How it works",
+    howTitle: "Launch a brief in",
+    howScript: "three clicks.",
     howSteps: [
-      { n: "01", title: "Post a brief", body: "Pick PR, on-site, or UGC. Set deliverables, budget, and creator criteria in minutes.", img: "/onboarding/verify-handles.png" },
-      { n: "02", title: "Review applicants", body: "Verified creators apply with real audience data. You approve. We handle the rest.", img: "/onboarding/pr-boxes-many.png" },
-      { n: "03", title: "Get content & results", body: "Milestone-gated payouts. Audit-ready compliance. Performance data on every deal.", img: "/onboarding/coin-stack.png" },
+      { n: "01", title: "Post your brief", body: "Pick PR, on-site, or paid UGC. Set deliverables, budget, and audience filters in under 10 minutes.", img: "/onboarding/verify-handles.png" },
+      { n: "02", title: "Vetted creators apply", body: "Every applicant comes pre-verified with audience data and prior-campaign performance. You approve in one tap.", img: "/onboarding/pr-boxes-many.png" },
+      { n: "03", title: "Content + receipts", body: "Milestone-gated payouts, UAE/KSA compliance certificates, and performance data on every post — delivered automatically.", img: "/onboarding/coin-stack.png" },
     ],
+    typesEyebrow: "Three ways to run a campaign",
+    typesTitle: "The right format for",
+    typesScript: "every objective.",
+    typesSub: "From seeding to paid performance. Same workflow, same creators, one dashboard.",
+    types: [
+      { img: "/web/brand-type-pr.png", title: "PR seeding", body: "Ship product to pre-matched creators in your niche. Pay when they post — no upfront, no agency fees." },
+      { img: "/web/brand-type-onsite.png", title: "On-site activations", body: "Fill your launch, pop-up, or store visit with vetted creators. Geo-targeted, permit-compliant." },
+      { img: "/web/brand-type-ugc.png", title: "Paid UGC", body: "Structured briefs, milestone payouts, rights-cleared deliverables. Audit-ready from the first deal." },
+    ],
+    industriesEyebrow: "Built for every category",
+    industriesTitle: "Creators for",
+    industriesScript: "every vertical.",
+    lifecycleEyebrow: "Every deal, one dashboard",
+    lifecycleTitle: "From brief to",
+    lifecycleScript: "posted proof.",
+    lifecycleSub: "Live stage tracking for every deal in your account. Never chase a creator again — MyPR does it for you.",
     finalHeadline: "Content that actually converts.",
-    finalSub: "Get UGC from creators your customers trust. Book a demo and we'll set up your first brief.",
+    finalSub: "Book a demo and we'll set up your first brief. Launch in under a week, paid on performance.",
+    finalWaitlist: "Talk to sales",
   },
   agency: {
     eyebrow: "For MENA talent managers",
     headline: { top: "Land deals", script: "your roster", bottom: "actually deserves." },
-    sub: "Run your entire talent book from one dashboard. Match creators to briefs, track earnings, stay compliant — no more WhatsApp chaos.",
+    sub: "Run your entire talent book from one dashboard. Match creators to briefs, track earnings, stay compliant — no more WhatsApp chaos or missed-deal chasing.",
     primaryCta: "Request access",
     navAlt: [
       { label: "For Creators", href: "/" },
       { label: "For Brands", href: "/brand" },
     ],
+    brandStripLabel: "Brands already briefing on MyPR",
+    howEyebrow: "How it works",
+    howTitle: "Get your roster earning in",
+    howScript: "three moves.",
     howSteps: [
-      { n: "01", title: "Invite your roster", body: "Onboard creators in minutes. Their handles, rates, and deliverables — in one place.", img: "/onboarding/verify-handles.png" },
-      { n: "02", title: "Match to briefs", body: "See live brand briefs and match your talent with a tap. Full market-rate transparency.", img: "/onboarding/pr-boxes-many.png" },
-      { n: "03", title: "Track everything", body: "Earnings, deal stages, compliance — all visible. Your cut is auto-calculated per deal.", img: "/onboarding/coin-stack.png" },
+      { n: "01", title: "Onboard your roster", body: "Invite creators with one link. Their handles, rates, niches, and availability sync into one live dashboard.", img: "/onboarding/verify-handles.png" },
+      { n: "02", title: "Match to live briefs", body: "See every live brand brief. Match the right creator with a tap. Full market-rate transparency — no more undercutting.", img: "/onboarding/pr-boxes-many.png" },
+      { n: "03", title: "Track, bill, and collect", body: "Every deal stage visible. Your agency cut auto-calculated. Payouts clear straight to your account.", img: "/onboarding/coin-stack.png" },
     ],
+    typesEyebrow: "Three deal types — one workflow",
+    typesTitle: "Playbooks your",
+    typesScript: "roster can run.",
+    typesSub: "Keep every creator's calendar full. MyPR routes briefs to the right talent automatically.",
+    types: [
+      { img: "/web/brand-type-pr.png", title: "PR packages", body: "Keep your creators' mailboxes full with product drops worth posting about — no chasing, no ghosting." },
+      { img: "/web/brand-type-onsite.png", title: "On-site bookings", body: "Book activations that convert. UAE/KSA compliance handled on every visit, with receipts." },
+      { img: "/web/brand-type-ugc.png", title: "Paid UGC briefs", body: "Negotiate at documented market rate. Milestone bonuses flow to creators, your cut clears automatically." },
+    ],
+    industriesEyebrow: "Match by niche",
+    industriesTitle: "Your roster's",
+    industriesScript: "full range, served.",
+    lifecycleEyebrow: "Every deal, every creator",
+    lifecycleTitle: "Track every talent's",
+    lifecycleScript: "pipeline.",
+    lifecycleSub: "Live status on every deal across your roster. Stop losing deals to DM chaos — MyPR is your source of truth.",
     finalHeadline: "Your agency, finally organized.",
-    finalSub: "Stop losing deals to DMs. Request access and move your roster onto MyPR.",
+    finalSub: "Stop losing deals to DMs. Request access and move your roster onto MyPR before the MENA market leaves you behind.",
+    finalWaitlist: "Request access",
   },
 };
 
@@ -88,12 +167,6 @@ const INDUSTRIES = [
   { key: "tech", label: "Tech" },
   { key: "home", label: "Home" },
   { key: "entertainment", label: "Entertainment" },
-];
-
-const BRAND_TYPES = [
-  { img: "/web/brand-type-pr.png", title: "PR Packages", body: "Free product drops from top brands — no deliverables required beyond an honest post." },
-  { img: "/web/brand-type-onsite.png", title: "On-site experiences", body: "Restaurants, spas, pop-ups, and launches. Show up, enjoy, share the story." },
-  { img: "/web/brand-type-ugc.png", title: "Paid UGC briefs", body: "Clear deliverables, guaranteed payout. Milestone bonuses for posts that perform." },
 ];
 
 const LIFECYCLE = [
@@ -305,13 +378,13 @@ function Hero({ audience }: { audience: Audience }) {
 }
 
 // Brand strip (marquee)
-function BrandMarquee() {
+function BrandMarquee({ audience }: { audience: Audience }) {
   const row = [...BRANDS, ...BRANDS];
   return (
     <section className="border-y border-[#1A1A1A]/10 bg-[#f3e7d6] py-8 overflow-hidden">
       <div className="max-w-[1180px] mx-auto px-5 sm:px-8 mb-5">
         <div className="text-center text-[12px] font-bold uppercase tracking-[0.16em] text-[#1A1A1A]/55">
-          Brands onboarding with MyPR
+          {COPY[audience].brandStripLabel}
         </div>
       </div>
       <div className="flex animate-marquee gap-14 w-max items-center">
@@ -331,9 +404,9 @@ function HowItWorks({ audience }: { audience: Audience }) {
   return (
     <section id="how" className="max-w-[1180px] mx-auto px-5 sm:px-8 py-24 sm:py-32">
       <div className="max-w-3xl">
-        <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">How it works</div>
+        <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">{copy.howEyebrow}</div>
         <h2 className="text-[40px] sm:text-[56px] font-black leading-[1] tracking-[-0.03em] text-[#1A1A1A]">
-          Land your first deal in <span className="italic">three taps.</span>
+          {copy.howTitle} <span className="italic">{copy.howScript}</span>
         </h2>
       </div>
 
@@ -363,24 +436,25 @@ function HowItWorks({ audience }: { audience: Audience }) {
 }
 
 // What You Can Land
-function WhatYouCanLand() {
+function WhatYouCanLand({ audience }: { audience: Audience }) {
+  const copy = COPY[audience];
   return (
     <section className="bg-[#FEFCF8] border-y border-[#1A1A1A]/8 py-24 sm:py-32">
       <div className="max-w-[1180px] mx-auto px-5 sm:px-8">
         <div className="flex items-end justify-between gap-8 mb-14 flex-wrap">
           <div className="max-w-2xl">
-            <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">Three ways to earn</div>
+            <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">{copy.typesEyebrow}</div>
             <h2 className="text-[40px] sm:text-[56px] font-black leading-[1] tracking-[-0.03em] text-[#1A1A1A]">
-              Deals that meet you <span className="italic">where you are.</span>
+              {copy.typesTitle} <span className="italic">{copy.typesScript}</span>
             </h2>
           </div>
           <p className="max-w-sm text-[16px] text-[#1A1A1A]/65 font-semibold">
-            From free product drops to paid briefs — MyPR ladders you from your first box to five-figure campaigns.
+            {copy.typesSub}
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {BRAND_TYPES.map((t, i) => (
+          {copy.types.map((t, i) => (
             <motion.div
               key={t.title}
               initial={{ opacity: 1, y: 18 }}
@@ -403,13 +477,14 @@ function WhatYouCanLand() {
 }
 
 // Industries grid
-function Industries() {
+function Industries({ audience }: { audience: Audience }) {
+  const copy = COPY[audience];
   return (
     <section className="max-w-[1180px] mx-auto px-5 sm:px-8 py-24 sm:py-32">
       <div className="max-w-2xl mb-14">
-        <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">Every niche</div>
+        <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">{copy.industriesEyebrow}</div>
         <h2 className="text-[40px] sm:text-[56px] font-black leading-[1] tracking-[-0.03em] text-[#1A1A1A]">
-          Your corner of the <span className="italic">internet</span>, covered.
+          {copy.industriesTitle} <span className="italic">{copy.industriesScript}</span>
         </h2>
       </div>
 
@@ -435,19 +510,20 @@ function Industries() {
 }
 
 // Lifecycle visual
-function Lifecycle() {
+function Lifecycle({ audience }: { audience: Audience }) {
+  const copy = COPY[audience];
   return (
     <section className="bg-[#f3e7d6] border-y border-[#1A1A1A]/10 py-24 sm:py-32 overflow-hidden">
       <div className="max-w-[1180px] mx-auto px-5 sm:px-8">
         <div className="flex items-end justify-between gap-8 mb-14 flex-wrap">
           <div className="max-w-2xl">
-            <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">Every step tracked</div>
+            <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#1A1A1A]/55 mb-4">{copy.lifecycleEyebrow}</div>
             <h2 className="text-[40px] sm:text-[56px] font-black leading-[1] tracking-[-0.03em] text-[#1A1A1A]">
-              From brief to <span className="italic">bank account.</span>
+              {copy.lifecycleTitle} <span className="italic">{copy.lifecycleScript}</span>
             </h2>
           </div>
           <p className="max-w-sm text-[16px] text-[#1A1A1A]/65 font-semibold">
-            No guessing what&apos;s happening with your deal. Live status at every stage, for creators, brands and agencies.
+            {copy.lifecycleSub}
           </p>
         </div>
 
@@ -507,7 +583,7 @@ function FinalCTA({ audience }: { audience: Audience }) {
                 href="#"
                 className="inline-flex items-center gap-2 rounded-full bg-[#1A1A1A] text-[#f8eee2] px-8 py-4 text-[15px] font-extrabold hover:-translate-y-0.5 transition"
               >
-                Join the waitlist
+                {copy.finalWaitlist}
                 <ArrowRight size={16} strokeWidth={3} />
               </a>
             </div>
@@ -543,11 +619,11 @@ export default function LandingPage({ audience = "creator" }: { audience?: Audie
   return (
     <main className="bg-[#f8eee2] text-[#1A1A1A]">
       <Hero audience={audience} />
-      <BrandMarquee />
+      <BrandMarquee audience={audience} />
       <HowItWorks audience={audience} />
-      <WhatYouCanLand />
-      <Industries />
-      <Lifecycle />
+      <WhatYouCanLand audience={audience} />
+      <Industries audience={audience} />
+      <Lifecycle audience={audience} />
       <FinalCTA audience={audience} />
       <Footer />
     </main>
